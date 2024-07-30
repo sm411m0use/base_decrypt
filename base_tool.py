@@ -1,8 +1,8 @@
 ##!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # @Author : S1mh0
-# @Time : 2023/12/9
-# @Version : 1.0--编译为exe版本
+# @Time : 2024/7/30
+# @Version : 1.1--自主选择base85解码方式
 
 import re
 import base64, base58, base91, py3base92, base62
@@ -87,8 +87,11 @@ def b64_decode(s):
 
 def b85_decode(s):
     try:
-        # s = base64.b85decode(s) // 一般是a85
-        s = base64.a85decode(s)
+        if base85_mode == 0:
+            s = base64.a85decode(s)
+        else:
+            s = base64.b85decode(s) # 一般是a85
+
         try:
             s.decode()
         except:
@@ -231,7 +234,13 @@ def main():
     parser = argparse.ArgumentParser(description="Decrypt the strings encrypted by base_encode")
     parser.add_argument('-f', '--file', help='add the path of encrypt strings')
     parser.add_argument('-t', '--text', help='add the encrypt strings')
+    parser.add_argument('-b', '--b85', action="store_true", help='use b85decode to decode, default: a85decode')
     args = parser.parse_args()
+    global base85_mode
+    base85_mode = 0
+
+    if args.b85:
+        base85_mode = 1
 
     if args.file and args.text:
         print("Error: -f and -t parameters cannot be used together.")
@@ -251,6 +260,7 @@ def main():
         print("  base_tool.exe -f base.txt")
         print("or use `-t` to set the encrypt_strings_strings, such as:")
         print("  base_tool.exe -t \"T1JTWEc1QT0=\"")
+        print("PS: base85 uses the a85decode, add `-b` to change to the b85decode")
 
 if __name__ == "__main__":
     print("******************************************************************")
